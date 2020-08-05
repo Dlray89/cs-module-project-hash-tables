@@ -22,6 +22,8 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
+        self.storage = [None] * MIN_CAPACITY
 
 
     def get_num_slots(self):
@@ -35,6 +37,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return len(self.storage)
+       
 
 
     def get_load_factor(self):
@@ -44,6 +48,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        load = 0
+
+        for i in self.storage:
+            if i != None:
+                load+= 1
+        load_factor = load / self.capacity
+        if load_factor > 0.7:
+            self.resize(int(2 * self.capacity))
+        elif load_factor < 0.2:
+            self.resize(int(self.capacity / 2))
+        return load_factor
+        
 
 
     def fnv1(self, key):
@@ -51,7 +67,29 @@ class HashTable:
         FNV-1 Hash, 64-bit
 
         Implement this, and/or DJB2.
+
+
+        FNV-1 Hash is as followed
+        hash = offset_basis
+        for each `octet-of-data` to be hashed
+        hash = hash * FNV_PRIME
+        hash = hash xor `octet-of-data`
+
+        offset_basis for FNV-1 is dependent on `n`(the size of the hash)
+
+        32-bit offset_basis = 2166136261
+        64 bit offset_basis = 14695981039346656037
+
+        FNV-1 PRIME is also dependent on `n`, the size of the hash
+
+        32 bit FNV_prime = 224 + 28 + 0x93 = 16777619
+        64 bit FNV_prime = 240 + 28 + 0xb3 = 1099511628211
         """
+
+        
+
+            
+
 
         # Your code here
 
@@ -63,6 +101,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
+        byte_array = key.encode('utf-8')
+
+        for byte in byte_array:
+            hash = ((hash * 33) ^ byte ) % 0x100000000
+
+        return hash
 
 
     def hash_index(self, key):
@@ -70,9 +115,12 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+        hash = 0
+        for char in key:
+            hash += ord(char)
         return self.djb2(key) % self.capacity
 
+# 
     def put(self, key, value):
         """
         Store the value with the given key.
@@ -82,6 +130,16 @@ class HashTable:
         Implement this.
         """
         # Your code here
+
+        h = self.hash_index(key)
+        current_value = self.storage[h]
+        if current_value == None:
+            self.storage[h] = HashTableEntry(key, value)
+        else:
+            new_entry = HashTableEntry(key, value)
+            new_entry.next = current_value
+            self.storage[h] = new_entry
+        self.get_load_factor()
 
 
     def delete(self, key):
@@ -93,6 +151,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        h = self.hash_index(key)
+        current_node = self.storage[h]
+        while current_node.next != None:
+            if current_node.key == key:
+                current_node.value = None
+                return
+            else:
+                current_node = current_node.next
+        if current_node.next == None:
+            if current_node.key == key:
+                current_node.value = None
+        self.get_load_factor()
 
 
     def get(self, key):
@@ -104,6 +174,14 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        for x in range(len(self.storage)):
+            current_node = self.storage[x]
+            while current_node != None:
+                if current_node.key == key:
+                    return current_node.value
+                else:
+                    current_node = current_node.next
+        
 
 
     def resize(self, new_capacity):
@@ -114,6 +192,25 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        pairs = {}
+        for x in range(len(self.storage)):
+            current_node = self.storage[x]
+            if current_node == None:
+                pass
+            else:
+                if current_node.next == None:
+                    pairs[current_node.key] = current_node.value
+                while current_node.next != None:
+                    pairs[current_node.key] = current_node.value
+                    current_node = current_node.next
+        self.capacity = new_capacity
+        self.storage = [None] * \
+            (self.capacity if self.capacity > 8 else 8)
+
+        
+       
+
+
 
 
 
