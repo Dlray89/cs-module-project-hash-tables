@@ -23,7 +23,8 @@ class HashTable:
     def __init__(self, capacity):
         # Your code here
         self.capacity = capacity
-        self.storage = [None] * MIN_CAPACITY
+        self.storage = [None] * self.capacity
+        self.count = 0
 
 
     def get_num_slots(self):
@@ -48,14 +49,13 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        load = 0
+       
 
-        for i in self.storage:
-            if i != None:
-                load+= 1
-        load_factor = load / self.capacity
+
+        load_factor = self.count / self.capacity
         if load_factor > 0.7:
             self.resize(int(2 * self.capacity))
+            
         elif load_factor < 0.2:
             self.resize(int(self.capacity / 2))
         return load_factor
@@ -115,9 +115,6 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        hash = 0
-        for char in key:
-            hash += ord(char)
         return self.djb2(key) % self.capacity
 
 # 
@@ -133,12 +130,14 @@ class HashTable:
 
         h = self.hash_index(key)
         current_value = self.storage[h]
+
         if current_value == None:
             self.storage[h] = HashTableEntry(key, value)
         else:
             new_entry = HashTableEntry(key, value)
             new_entry.next = current_value
             self.storage[h] = new_entry
+        self.count += 1
         self.get_load_factor()
 
 
@@ -155,13 +154,15 @@ class HashTable:
         current_node = self.storage[h]
         while current_node.next != None:
             if current_node.key == key:
-                current_node.value = None
+                current_node.value = 
+                self.count -= 1
                 return
             else:
                 current_node = current_node.next
         if current_node.next == None:
             if current_node.key == key:
                 current_node.value = None
+                self.count -= 1    
         self.get_load_factor()
 
 
@@ -174,13 +175,16 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        for x in range(len(self.storage)):
-            current_node = self.storage[x]
-            while current_node != None:
-                if current_node.key == key:
-                    return current_node.value
-                else:
-                    current_node = current_node.next
+        h = self.hash_index(key)
+        current_node = self.storage[h]
+        if current_node == None:
+            return None
+        while current_node != None:
+            if current_node.key == key:
+                return current_node.value
+            else:
+                current_node = current_node.next
+        return None
         
 
 
@@ -196,7 +200,7 @@ class HashTable:
         for x in range(len(self.storage)):
             current_node = self.storage[x]
             if current_node == None:
-                pass
+                #TODO:
             else:
                 if current_node.next == None:
                     pairs[current_node.key] = current_node.value
