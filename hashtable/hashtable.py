@@ -200,13 +200,13 @@ class HashTable:
         for x in range(len(self.storage)):
             current_node = self.storage[x]
             if current_node == None:
-                #TODO:
-                else:
-                    if current_node.next == None:
-                        pairs[current_node.key] = current_node.value
-                    while current_node.next != None:
-                        pairs[current_node.key] = current_node.value
-                        current_node = current_node.next
+                pass
+            else:
+                if current_node.next == None:
+                    pairs[current_node.key] = current_node.value
+                while current_node.next != None:
+                    pairs[current_node.key] = current_node.value
+                    current_node = current_node.next
         self.capacity = new_capacity
         self.storage = [None] * \
             (self.capacity if self.capacity > 8 else 8)
