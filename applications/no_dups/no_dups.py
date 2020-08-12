@@ -1,5 +1,24 @@
-def no_dups(s):
-    # Your code here
+# To Find the first repeated word in a string  from collections 
+from collections import Counter
+def no_dups(n):
+   # first split given string separated by space into words
+   w = n.split()
+   con = Counter(w)
+   for key in w:
+       if con[key]>1:
+           print ("REPEATED WORD IS: ", con)
+       else:
+            return 
+    
+
+
+    
+    
+    
+
+
+
+
 
 
 
