@@ -1,41 +1,42 @@
 import random
 
-import re
-from collections import defaultdict
 
-# Read in all the words in one go
-with open("input.txt", 'r') as f:
-    if f.mode == 'r':
-        words = f.read()
-        # print(words, end=' ')
-tokenized_text = [
-    word
-    for word in re.split('\W+', words)
-    if word != ''
-]
+# Read in all the words in one
+text_file = open('input.txt', encoding='utf8').read()
 
-graph = defaultdict(lambda: defaultdict(int))
+new_words = text_file.split()
 
-last_word = tokenized_text[0].lower()
-for word in tokenized_text[1:]:
-    word = word.lower()
-    graph[last_word][word] += 1
-    last_word = word
+def make_pairs(new_words):
+    for i in range(len(new_words) - 1):
+        yield(new_words[i], new_words[i + 1])
 
-limit = 3
-random_word = random.choices(words)
-for first_word in random_word:
-    next_words = list(graph[first_word].keys())[:limit]
-    for next_word in next_words:
-        print(first_word, next_word)
+pairs = make_pairs(new_words)
 
-# TODO: analyze which words can follow other words
-# Your code here
+word_dict = {}
 
-    
+for word_1, word_2 in pairs:
+    if word_1 in word_dict.keys():
+        word_dict[word_1].append(word_2)
+    else:
+        word_dict[word_1] = [word_2]
+
+first_word = random.choice(new_words)
+
+while first_word.islower():
+    first_word = random.choice(new_words)
+
+chain = [first_word]
+print(chain)
+n_words = 20
+
+for i in range(n_words):
+    chain.append(random.choice(word_dict[chain[-1]]))
+
+' '.join(chain)
+
+new_chain = ' '.join(chain)
 
 
+print(new_chain)
 
-# TODO: construct 5 random sentences
-# Your code here
 
